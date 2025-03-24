@@ -147,8 +147,9 @@ function isDateInPeriod(date, period) {
  * '1999-01-05T02:20:00.000Z' => '1/5/1999, 2:20:00 AM'
  * '2010-12-15T22:59:00.000Z' => '12/15/2010, 10:59:00 PM'
  */
-function formatDate(/* date */) {
-  throw new Error('Not implemented');
+function formatDate(date) {
+  const format = new Date(date);
+  return format.toLocaleString('en-US', { timeZone: 'UTC' });
 }
 
 /**
@@ -163,8 +164,16 @@ function formatDate(/* date */) {
  * 12, 2023 => 10
  * 1, 2024 => 8
  */
-function getCountWeekendsInMonth(/* month, year */) {
-  throw new Error('Not implemented');
+function getCountWeekendsInMonth(month, year) {
+  let count = 0;
+  const days = new Date(year, month, 0).getDate();
+  for (let day = 1; day <= days; day += 1) {
+    const dayDate = new Date(year, month - 1, day);
+    if (dayDate.getDay() === 0 || dayDate.getDay() === 6) {
+      count += 1;
+    }
+  }
+  return count;
 }
 
 /**
@@ -180,8 +189,17 @@ function getCountWeekendsInMonth(/* month, year */) {
  * Date(2024, 0, 31) => 5
  * Date(2024, 1, 23) => 8
  */
-function getWeekNumberByDate(/* date */) {
-  throw new Error('Not implemented');
+function getWeekNumberByDate(date) {
+  const targetDate = new Date(
+    Date.UTC(date.getFullYear(), date.getMonth(), date.getDate())
+  );
+  const dayWeek = (targetDate.getUTCDay() + 6) % 7;
+  targetDate.setUTCDate(targetDate.getUTCDate() - dayWeek + 3);
+  const start = new Date(Date.UTC(targetDate.getUTCFullYear(), 0, 4));
+  const startDayWeek = (start.getUTCDay() + 6) % 7;
+  start.setUTCDate(start.getUTCDate() - startDayWeek + 3);
+  const week = (targetDate - start) / 86400000;
+  return Math.ceil((week + 1) / 7);
 }
 
 /**
